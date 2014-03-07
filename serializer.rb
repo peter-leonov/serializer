@@ -32,6 +32,11 @@ class Serializer
   end
 end
 
+
+
+# tests
+
+
 Person = Struct.new(:name, :age)
 
 class JustAHash < Serializer
