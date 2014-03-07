@@ -47,10 +47,11 @@ puts Oj.dump(JustAHash.serialize(Person.new('John', 20))) == Oj.dump({name: "Joh
 
 
 class HashWithAttrs < Serializer
-  hash do
+  hash do |obj|
     attr :age
     attr :name
+    attr :nick, obj.name.upcase
     attr :hobby, 'arts'
   end
 end
-puts Oj.dump(HashWithAttrs.serialize(Person.new('John', 20))) == Oj.dump({age: 20, name: "John", hobby: "arts"})
+puts Oj.dump(HashWithAttrs.serialize(Person.new('John', 20))) == Oj.dump({age: 20, name: "John", nick: "JOHN", hobby: "arts"})
