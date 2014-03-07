@@ -26,8 +26,8 @@ class Serializer
       instance_exec(leaf, &block)
       self
     end
-    def attr name
-      self[name] = @leaf.send(name)
+    def attr name, v=(v_empty=true)
+      self[name] = v_empty ? @leaf.send(name) : v
     end
   end
 end
@@ -50,6 +50,7 @@ class HashWithAttrs < Serializer
   hash do
     attr :age
     attr :name
+    attr :hobby, 'arts'
   end
 end
-puts Oj.dump(HashWithAttrs.serialize(Person.new('John', 20))) == Oj.dump({age: 20, name: "John"})
+puts Oj.dump(HashWithAttrs.serialize(Person.new('John', 20))) == Oj.dump({age: 20, name: "John", hobby: "arts"})
