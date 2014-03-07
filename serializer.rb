@@ -85,12 +85,12 @@ class HashWithManyAttrs < Serializer
 end
 puts Oj.dump(HashWithManyAttrs.serialize(Person.new('John', 20))) == Oj.dump({name: "John", age: 20})
 
+DogOwner = Struct.new(:name, :dog)
+Dog = Struct.new(:name, :age)
 class HashWithHash < Serializer
   hash do |obj|
     attr :name
     hash :dog
   end
 end
-DogOwner = Struct.new(:name, :dog)
-Dog = Struct.new(:name)
-puts Oj.dump(HashWithHash.serialize(DogOwner.new('John', Dog.new('Spike')))) == Oj.dump({name: "John", dog: {name: "Spike"}})
+puts Oj.dump(HashWithHash.serialize(DogOwner.new('John', Dog.new('Spike', 7)))) == Oj.dump({name: "John", dog: {name: "Spike", age: 7}})
