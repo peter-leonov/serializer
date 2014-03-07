@@ -37,8 +37,8 @@ Person = Struct.new(:name, :age)
 class JustAHash < Serializer
   hash
 end
-puts Oj.dump(JustAHash.serialize(Person.new('John', 20))) == '{":name":"John",":age":20}'
-puts Oj.dump(JustAHash.serialize(Person.new('John', 20))) == '{":name":"John",":age":20}'
+puts Oj.dump(JustAHash.serialize(Person.new('John', 20))) == Oj.dump({name: "John", age: 20})
+puts Oj.dump(JustAHash.serialize(Person.new('John', 20))) == Oj.dump({name: "John", age: 20})
 
 
 class HashWithAttrs < Serializer
@@ -47,4 +47,4 @@ class HashWithAttrs < Serializer
     attr :name
   end
 end
-puts Oj.dump(HashWithAttrs.serialize(Person.new('John', 20))) == '{":age":20,":name":"John"}'
+puts Oj.dump(HashWithAttrs.serialize(Person.new('John', 20))) == Oj.dump({age: 20, name: "John"})
