@@ -56,6 +56,10 @@ class Serializer
     def collection name, v=(v_empty=true), &block
       self[name] = Collection.walk(v_empty ? @_.send(name) : v, &block)
     end
+
+    def collection_add name, v=(v_empty=true), &block
+      self[name] += Collection.walk(v_empty ? @_.send(name) : v, &block)
+    end
   end
 
   class Collection < ::Array
