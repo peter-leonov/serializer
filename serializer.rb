@@ -60,6 +60,12 @@ class Serializer
     def collection_add name, v=(v_empty=true), &block
       self[name] += Collection.walk(v_empty ? @_.send(name) : v, &block)
     end
+
+    def collection_of name, attrs, &block
+      self[name] = attrs.map do |attr|
+        Collection.walk(@_.send(attr), &block)
+      end.flatten(1) # flatten one level deep
+    end
   end
 
   class Collection < ::Array
@@ -155,3 +161,15 @@ class CollectionInAResource < Serializer
   end
 end
 puts Oj.dump(CollectionInAResource.serialize(DogsOwner.new('Cruella', [Dog.new('Perdita',0.5),Dog.new('Lucky',0.5),Dog.new('Rolly',0.5)]))) == Oj.dump({name:'Cruella', dogs:[{name:'Perdita',age:0.5},{name:'Lucky',age:0.5},{name:'Rolly',age:0.5}]})
+
+PetsOwner = Struct.new(:name, :dogs, :cats)
+Cat = Struct.new(:name, :age)
+class CollectionAndCollectionInAResource < Serializer
+  resource do
+    attr :name
+    collection_of :pets, [:dogs, :cats] do
+      attrs :name, :age
+    end
+  end
+end
+puts Oj.dump(CollectionAndCollectionInAResource.serialize(PetsOwner.new('We', [Dog.new('Dow',11),Dog.new('Katrin',2),Dog.new('Indiana',3)],[Cat.new('Baloon',4)]))) == Oj.dump({name:'We', pets:[{name:'Dow',age:11},{name:'Katrin',age:2},{name:'Indiana',age:3},{name:'Baloon',age:4}]})
