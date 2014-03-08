@@ -13,13 +13,13 @@ class Serializer
   end
   
   class Hash < ::Hash
-    def walk leaf, &block
+    def walk v, &block
       unless block
         # check if the leaf is convertible to hash
-        leaf.respond_to? :to_h or
+        v.respond_to? :to_h or
           raise 'leaf is not convertible to hash (does not respond to :to_h), supply a block with appropriate rules'
         # just return the hash representation of the leaf
-        return leaf.to_h
+        return v.to_h
       end
       
       @_ = leaf
