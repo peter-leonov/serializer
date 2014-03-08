@@ -174,12 +174,17 @@ describe Serializer do
     describe Serializer::Collection do
 
       describe '.collection' do
-        it 'should convert to array' do
+        it 'should convert to array of hashes' do
           class JustACollection < Serializer
             collection
           end
 
-          JustACollection.serialize(Collection.new(1,2,3)).should == [1,2,3]
+          JustACollection.serialize(
+            Parents.new(Person.new('Dad', 50), Person.new('Mom', 46))
+          ).should == [
+            {name: 'Dad', age: 50, dogs: nil, cats: nil},
+            {name: 'Mom', age: 46, dogs: nil, cats: nil}
+          ]
         end
 
         it 'maps items to hashes' do

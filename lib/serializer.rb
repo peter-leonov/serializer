@@ -72,7 +72,7 @@ class Serializer
         v.respond_to? :to_a or
           raise 'leaf is not convertible to array (does not respond to :to_a)'
         # just return the array representation of the collection
-        return v.to_a
+        return v.to_a.map { |item| Resource.walk(item) }
       end
 
       v.map do |item|
