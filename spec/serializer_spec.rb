@@ -1,12 +1,10 @@
 require 'serializer'
 
-Person = Struct.new(:name, :age)
-DogOwner = Struct.new(:name, :dog)
+Parents = Struct.new(:mom,:dad)
+Person = Struct.new(:name, :age, :dogs, :cats)
 Dog = Struct.new(:name, :age)
-Collection = Struct.new(:a,:b,:c)
-DogsOwner = Struct.new(:name, :dogs)
-PetsOwner = Struct.new(:name, :dogs, :cats)
 Cat = Struct.new(:name, :age)
+
 
 describe Serializer do
 
@@ -15,11 +13,18 @@ describe Serializer do
       class JustAResource < Serializer
         resource
       end
-    
-      JustAResource.serialize(Person.new('John', 20)).should == {name: "John", age: 20}
+
+      JustAResource.serialize(
+        Person.new('John', 20)
+      ).should == {
+        name: "John",
+        age: 20,
+        cats: nil,
+        dogs: nil
+      }
     end
   end
-  
+
   describe Serializer::Resource do
 
     describe '#attr' do
@@ -63,17 +68,17 @@ describe Serializer do
         class ResourceWithResource < Serializer
           resource do |obj|
             attr :name
-            resource :dog
+            resource :dogs
           end
         end
         ResourceWithResource.serialize(
-          DogOwner.new(
-            'John',
+          Person.new(
+            'John', 33,
             Dog.new('Spike', 7)
           )
         ).should == {
           name: "John",
-          dog: {name: "Spike", age: 7}
+          dogs: {name: "Spike", age: 7}
         }
       end
       
@@ -81,7 +86,7 @@ describe Serializer do
         class ResourceWithResourceBlock < Serializer
           resource do |obj|
             attr :name
-            resource :dog do |dog|
+            resource :dogs do |dog|
               attr :name
               attr :age, dog.age + 1
             end
@@ -89,13 +94,13 @@ describe Serializer do
         end
 
         ResourceWithResourceBlock.serialize(
-          DogOwner.new(
-            'John',
+          Person.new(
+            'John', 33,
             Dog.new('Spike', 7)
           )
         ).should == {
           name: "John",
-          dog: {age: 8, name: "Spike"}
+          dogs: {age: 8, name: "Spike"}
         }
       end
       
@@ -111,8 +116,8 @@ describe Serializer do
           end
 
           CollectionInAResource.serialize(
-            DogsOwner.new(
-              'Cruella',
+            Person.new(
+              'Cruella', 44,
               [
                 Dog.new('Perdita',0.5),
                 Dog.new('Lucky',0.5),
@@ -142,8 +147,8 @@ describe Serializer do
           end
 
           CollectionAndCollectionInAResource.serialize(
-            PetsOwner.new(
-              'We',
+            Person.new(
+              'Me', 26,
               [
                 Dog.new('Dow', 11),
                 Dog.new('Katrin', 2),
