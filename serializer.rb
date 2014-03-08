@@ -88,3 +88,14 @@ class HashWithHash < Serializer
   end
 end
 puts Oj.dump(HashWithHash.serialize(DogOwner.new('John', Dog.new('Spike', 7)))) == Oj.dump({name: "John", dog: {name: "Spike", age: 7}})
+class HashWithHashBlock < Serializer
+  hash do |obj|
+    attr :name
+    hash :dog do |dog|
+      # different order
+      attr :age, dog.age
+      attr :name
+    end
+  end
+end
+puts Oj.dump(HashWithHashBlock.serialize(DogOwner.new('John', Dog.new('Spike', 7)))) == Oj.dump({name: "John", dog: {age: 7, name: "Spike"}})
