@@ -38,20 +38,20 @@ person = Person.new(
 run:
 
 ```ruby
-DogsOwnerSerializer.serialize(person)
+DogsOwnerSerializer.serialize(person).to_json
 ```
 
 result will look like:
 
 ```json
 {
-  name: 'Cruella',
-  age: 44,
-  dogs:
+  "name": "Cruella",
+  "age": 44,
+  "dogs":
   [
-    {name: 'Perdita', age: 0.5},
-    {name: 'Lucky', age: 0.5},
-    {name: 'Rolly', age: 0.5}
+    {"name": "Perdita", "age": 0.5},
+    {"name": "Lucky",   "age": 0.5},
+    {"name": "Rolly",   "age": 0.5}
   ]
 }
 ```
