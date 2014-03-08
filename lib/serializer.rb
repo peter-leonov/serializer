@@ -68,11 +68,11 @@ class Serializer
   class Collection < ::Array
     def self.walk v, &block
       unless block
-        # check if the collection is convertible to array
-        v.respond_to? :to_a or
-          raise 'leaf is not convertible to array (does not respond to :to_a)'
-        # just return the array representation of the collection
-        return v.to_a.map { |item| Resource.walk(item) }
+        # check if the collection is iteratable
+        v.respond_to? :map or
+          raise 'collection is not iteratable (does not respond to :map)'
+        # pretend that the collection is an array of resources
+        return v.map { |item| Resource.walk(item) }
       end
 
       v.map do |item|
