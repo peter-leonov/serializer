@@ -3,7 +3,7 @@ Inspired by [DroidLabs Serializer](/droidlabs/active_serializer).
 
 For classes like these:
 
-```
+```ruby
 Person = Struct.new(:name, :age, :dogs)
 Dog = Struct.new(:name, :age)
 ```
@@ -33,6 +33,7 @@ person = Person.new(
     Dog.new('Rolly',0.5)
   ]
 )
+```
 
 run:
 
