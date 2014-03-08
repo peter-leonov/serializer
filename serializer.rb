@@ -50,7 +50,11 @@ class Serializer
     end
 
     def hash name, v=(v_empty=true), &block
-      self[name] = self.class.walk(v_empty ? @_.send(name) : v, &block)
+      self[name] = Hash.walk(v_empty ? @_.send(name) : v, &block)
+    end
+
+    def collection name, v=(v_empty=true), &block
+      self[name] = Collection.walk(v_empty ? @_.send(name) : v, &block)
     end
   end
 
@@ -136,3 +140,14 @@ class CollectionOfDogs < Serializer
   end
 end
 puts Oj.dump(CollectionOfDogs.serialize([Dog.new('Spike',7),Dog.new('Scooby',13),Dog.new('Bear',1)])) == Oj.dump([{name:'Spike',age:7},{name:'Scooby',age:13},{name:'Bear',age:1}])
+
+DogsOwner = Struct.new(:name, :dogs)
+class CollectionInAHash < Serializer
+  hash do
+    attr :name
+    collection :dogs do
+      attrs :name, :age
+    end
+  end
+end
+puts Oj.dump(CollectionInAHash.serialize(DogsOwner.new('Cruella', [Dog.new('Perdita',0.5),Dog.new('Lucky',0.5),Dog.new('Rolly',0.5)]))) == Oj.dump({name:'Cruella', dogs:[{name:'Perdita',age:0.5},{name:'Lucky',age:0.5},{name:'Rolly',age:0.5}]})
