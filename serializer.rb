@@ -5,7 +5,7 @@ class Serializer
   def self.serialize v
     raise 'no root rule defined' unless @class
     # return anything the walk method returns
-    root = @class.new.walk(v, &@block)
+    @class.walk(v, &@block)
   end
   def self.hash &block
     @class = Hash
@@ -13,7 +13,7 @@ class Serializer
   end
   
   class Hash < ::Hash
-    def walk v, &block
+    def self.walk v, &block
       unless block
         # check if the leaf is convertible to hash
         v.respond_to? :to_h or
@@ -22,9 +22,14 @@ class Serializer
         return v.to_h
       end
       
-      @_ = leaf
-      instance_exec(leaf, &block)
-      self
+      hash = new(v)
+      hash.instance_exec(v, &block)
+      hash
+    end
+
+    def initialize v
+      # default object, aka leaf
+      @_ = v
     end
 
     def attr name, v=(v_empty=true)
@@ -38,7 +43,7 @@ class Serializer
     end
 
     def hash name, v=(v_empty=true), &block
-      self[name] = self.class.new.walk(v_empty ? @_.send(name) : v, &block)
+      self[name] = self.class.walk(v_empty ? @_.send(name) : v, &block)
     end
   end
 end
