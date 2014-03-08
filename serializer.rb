@@ -9,6 +9,7 @@ class Serializer
   end
 
   def self.hash &block
+    raise 'root rule is already defined' if @class
     @class = Hash
     @block = block
   end
@@ -49,6 +50,7 @@ class Serializer
   end
 
   def self.collection &block
+    raise 'root rule is already defined' if @class
     @class = Collection
     @block = block
   end
