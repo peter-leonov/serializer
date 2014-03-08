@@ -7,11 +7,12 @@ class Serializer
     # return anything the walk method returns
     @class.walk(v, &@block)
   end
+
   def self.hash &block
     @class = Hash
     @block = block
   end
-  
+
   class Hash < ::Hash
     def self.walk v, &block
       unless block
@@ -44,6 +45,27 @@ class Serializer
 
     def hash name, v=(v_empty=true), &block
       self[name] = self.class.walk(v_empty ? @_.send(name) : v, &block)
+    end
+  end
+
+  def self.collection &block
+    @class = Collection
+    @block = block
+  end
+
+  class Collection < ::Array
+    def self.walk v, &block
+      unless block
+        # check if the leaf is convertible to array
+        v.respond_to? :to_a or
+          raise 'leaf is not convertible to array (does not respond to :to_a)'
+        # just return the array representation of the leaf
+        return v.to_a
+      end
+
+      v.map do |item|
+        Hash.walk(item, &block)
+      end
     end
   end
 end
@@ -99,3 +121,17 @@ class HashWithHashBlock < Serializer
   end
 end
 puts Oj.dump(HashWithHashBlock.serialize(DogOwner.new('John', Dog.new('Spike', 7)))) == Oj.dump({name: "John", dog: {age: 7, name: "Spike"}})
+
+
+class JustACollection < Serializer
+  collection
+end
+puts Oj.dump(JustACollection.serialize(Struct.new(:a,:b,:c).new(1,2,3))) == Oj.dump([1,2,3])
+
+class CollectionOfDogs < Serializer
+  collection do |dog|
+    attr :name
+    attr :age, dog.age
+  end
+end
+puts Oj.dump(CollectionOfDogs.serialize([Dog.new('Spike',7),Dog.new('Scooby',13),Dog.new('Bear',1)])) == Oj.dump([{name:'Spike',age:7},{name:'Scooby',age:13},{name:'Bear',age:1}])
