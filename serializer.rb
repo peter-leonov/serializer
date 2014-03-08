@@ -38,18 +38,7 @@ class Serializer
     end
 
     def hash name, v=(v_empty=true), &block
-      # ask the leaf for value if v wasn't given
-      v = @leaf.send(name) if v_empty
-      
-      unless block
-        # check if the leaf is convertible to hash
-        v.respond_to? :to_h or
-          raise 'leaf is not convertible to hash (does not respond to :to_h), supply a block with appropriate rules'
-        # just return the hash representation of the leaf
-        return self[name] = v.to_h
-      end
-      
-      self[name] = self.class.new.walk(v, &block)
+      self[name] = self.class.new.walk(v_empty ? @leaf.send(name) : v, &block)
     end
   end
 end
