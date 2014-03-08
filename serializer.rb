@@ -13,6 +13,11 @@ class Serializer
     @class = Hash
     @block = block
   end
+  def self.collection &block
+    raise 'root rule is already defined' if @class
+    @class = Collection
+    @block = block
+  end
 
   class Hash < ::Hash
     def self.walk v, &block
@@ -47,12 +52,6 @@ class Serializer
     def hash name, v=(v_empty=true), &block
       self[name] = self.class.walk(v_empty ? @_.send(name) : v, &block)
     end
-  end
-
-  def self.collection &block
-    raise 'root rule is already defined' if @class
-    @class = Collection
-    @block = block
   end
 
   class Collection < ::Array
