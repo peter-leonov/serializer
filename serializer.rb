@@ -22,13 +22,13 @@ class Serializer
         return leaf.to_h
       end
       
-      @leaf = leaf
+      @_ = leaf
       instance_exec(leaf, &block)
       self
     end
 
     def attr name, v=(v_empty=true)
-      self[name] = v_empty ? @leaf.send(name) : v
+      self[name] = v_empty ? @_.send(name) : v
     end
 
     def attrs *names
@@ -38,7 +38,7 @@ class Serializer
     end
 
     def hash name, v=(v_empty=true), &block
-      self[name] = self.class.new.walk(v_empty ? @leaf.send(name) : v, &block)
+      self[name] = self.class.new.walk(v_empty ? @_.send(name) : v, &block)
     end
   end
 end
