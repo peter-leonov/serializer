@@ -119,17 +119,17 @@ describe Serializer do
             Person.new(
               'Cruella', 44,
               [
-                Dog.new('Perdita',0.5),
-                Dog.new('Lucky',0.5),
-                Dog.new('Rolly',0.5)
+                Dog.new('Perdita', 0.5),
+                Dog.new('Lucky', 0.5),
+                Dog.new('Rolly', 0.5)
               ]
             )
           ).should == {
             name: 'Cruella',
             dogs: [
               {name: 'Perdita', age: 0.5},
-              {name: 'Lucky', age:0.5},
-              {name: 'Rolly', age:0.5}
+              {name: 'Lucky', age: 0.5},
+              {name: 'Rolly', age: 0.5}
             ]
           }
         end
