@@ -61,10 +61,10 @@ class Serializer
   class Collection < ::Array
     def self.walk v, &block
       unless block
-        # check if the leaf is convertible to array
+        # check if the collection is convertible to array
         v.respond_to? :to_a or
           raise 'leaf is not convertible to array (does not respond to :to_a)'
-        # just return the array representation of the leaf
+        # just return the array representation of the collection
         return v.to_a
       end
 
