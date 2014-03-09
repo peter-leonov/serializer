@@ -46,6 +46,25 @@ describe Serializer do
           hobby: "arts"
         }
       end
+
+      it 'should get the value form block if given' do
+        class AttrWithBlock < Serializer
+          resource do |obj|
+            attr :age do
+              123
+            end
+            attr :nick, obj.name do |name|
+              name.upcase
+            end
+          end
+          self
+        end.serialize(
+          Person.new('John', 20)
+        ).should == {
+          age: 123,
+          nick: "JOHN"
+        }
+      end
     end
 
     describe '#attrs' do

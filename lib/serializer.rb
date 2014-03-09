@@ -45,6 +45,10 @@ class Serializer
     end
 
     def attr name, v=(v_empty=true)
+      if block_given?
+        v = yield v
+        v_empty = false
+      end
       self[name] = v_empty ? @_.send(name) : v
     end
 
