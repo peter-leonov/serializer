@@ -58,6 +58,10 @@ class Serializer
       self[name] = Resource.walk(v_empty ? @_.send(name) : v, &block)
     end
 
+    def namespace name, &block
+      self[name] = Resource.walk(@_, &block)
+    end
+
     def collection name, v=(v_empty=true), &block
       self[name] = Collection.walk(v_empty ? @_.send(name) : v, &block)
     end

@@ -134,6 +134,29 @@ describe Serializer do
           }
         end
       end
+
+      describe '#namespace' do
+        it 'adds a wrapping hash with same def object' do
+          class NamespaceInAResource < Serializer
+            resource do
+              namespace :ns do |person|
+                attr :name
+                attr :age, person.age
+              end
+            end
+            self
+          end.serialize(
+            Person.new(
+              'Cruella', 44,
+            )
+          ).should == {
+            ns: {
+              name: 'Cruella',
+              age: 44
+            }
+          }
+        end
+      end
       
       describe '#collection_of' do
         it 'adds items to an existing array attribute' do
