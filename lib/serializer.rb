@@ -68,9 +68,9 @@ class Serializer
   class Collection < ::Array
     def self.walk v, &block
       unless block
-        # check if the collection is iteratable
-        v.respond_to? :map or
-          raise 'collection is not iteratable (does not respond to :map)'
+        # check if the collection is enumerable
+        v.is_a? Enumerable or
+          raise 'collection is not enumerable (does not inherit Enumerable)'
         # pretend that the collection is an array of resources
         return v.map { |item| Resource.walk(item) }
       end
