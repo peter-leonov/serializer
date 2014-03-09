@@ -211,6 +211,79 @@ describe Serializer do
         end
       end
     end
+
+    describe Serializer::List do
+
+      describe '.walk' do
+        it 'should convert to array' do
+          class JustAList < Serializer
+            list
+          end
+
+          JustAList.serialize(
+            Parents.new('Mom', 'Dad')
+          ).should == [
+            'Mom',
+            'Dad'
+          ]
+        end
+
+        it 'should map the array if block given' do
+          class ListWithBlock < Serializer
+            list do |item|
+              resource do
+                attr :name
+                attr :age, item.age
+              end
+            end
+          end
+
+          ListWithBlock.serialize(
+            Parents.new(Person.new('Dad', 50), Person.new('Mom', 46))
+          ).should == [
+            {name: 'Dad', age: 50},
+            {name: 'Mom', age: 46}
+          ]
+        end
+
+        it 'should list lists' do
+          class ListOfLists < Serializer
+            list do
+              list do
+                _
+              end
+            end
+          end
+
+          ListOfLists.serialize(
+            Parents.new(Person.new('Dad', 50), Person.new('Mom', 46))
+          ).should == [
+            ['Dad', 50, nil, nil],
+            ['Mom', 46, nil, nil]
+          ]
+        end
+
+        it 'should list collections' do
+          class ListOfCollections < Serializer
+            list do
+              collection do
+                attr :name
+                attr :age, _.age - 50
+              end
+            end
+            self
+          end.serialize(
+            Parents.new(
+              Parents.new(Person.new('Grand Dad', 75), Person.new('Grand Mom', 70)),
+              Parents.new(Person.new('Grand Dad', 50), Person.new('Grand Mom', 46)) # young ones :)
+            )
+          ).should == [
+            [{name: 'Grand Dad', age: 25}, {name: 'Grand Mom', age: 20}],
+            [{name: 'Grand Dad', age: 0}, {name: 'Grand Mom', age: -4}] # hee-hee :)
+          ]
+        end
+      end
+    end
   end
 
 end

@@ -15,6 +15,11 @@ class Serializer
     @class = Collection
     @block = block
   end
+  def self.list &block
+    raise 'root rule is already defined' if @class
+    @class = List
+    @block = block
+  end
 
   class Resource < ::Hash
     def self.walk v, &block
@@ -31,8 +36,11 @@ class Serializer
       resource
     end
 
+    # default object, aka leaf
+    attr_accessor :_
+
     def initialize v
-      # default object, aka leaf
+      # set the leaf
       @_ = v
     end
 
@@ -63,6 +71,10 @@ class Serializer
         Collection.walk(@_.send(attr), &block)
       end.flatten(1) # flatten one level deep
     end
+
+    def list name, v=(v_empty=true), &block
+      self[name] = List.walk(v_empty ? @_.send(name) : v, &block)
+    end
   end
 
   class Collection < ::Array
@@ -78,6 +90,39 @@ class Serializer
       v.map do |item|
         Resource.walk(item, &block)
       end
+    end
+  end
+
+  class List < ::Array
+    def self.walk v, &block
+      # check if the collection is enumerable
+      v.is_a? Enumerable or raise 'list is not enumerable (does not inherit Enumerable)'
+
+      unless block
+        # pretend that the collection is an array of anything
+        return v.to_a
+      end
+
+      list = new
+      v.map do |item, *args|
+        list._ = item # in case of array-like list
+        list.instance_exec(item, *args, &block)
+      end
+    end
+
+    # default object, aka leaf
+    attr_accessor :_
+
+    def resource v=(v_empty=true), &block
+      Resource.walk(v_empty ? @_ : v, &block)
+    end
+
+    def collection v=(v_empty=true), &block
+      Collection.walk(v_empty ? @_ : v, &block)
+    end
+
+    def list v=(v_empty=true), &block
+      List.walk(v_empty ? @_ : v, &block)
     end
   end
 end
