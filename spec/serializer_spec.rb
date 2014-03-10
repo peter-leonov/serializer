@@ -342,4 +342,29 @@ describe Serializer do
     end
   end
 
+  describe Serializer::List do
+    describe '#walk' do
+      class WrappedArray < Serializer
+        wrap do |hero, friend, enemie|
+          resource hero do
+            attr :name
+            attr :age
+            attr :friend, friend.name
+            attr :enemie, enemie.name
+          end
+        end
+        self
+      end.serialize(
+        Person.new('Spiderman', 22),
+        Person.new('Stacy', 19),
+        Person.new('Octopus', 52)
+      ).should == {
+        name: 'Spiderman',
+        age: 22,
+        friend: 'Stacy',
+        enemie: 'Octopus'
+      }
+    end
+  end
+
 end

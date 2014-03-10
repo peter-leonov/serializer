@@ -1,8 +1,8 @@
 class Serializer
-  def self.serialize v
+  def self.serialize *args
     raise 'no root rule defined' unless @class
     # return anything the walk method returns
-    @class.walk(v, &@block)
+    @class.walk(*args, &@block)
   end
 
   def self.resource &block
@@ -18,6 +18,11 @@ class Serializer
   def self.list &block
     raise 'root rule is already defined' if @class
     @class = List
+    @block = block
+  end
+  def self.wrap &block
+    raise 'root rule is already defined' if @class
+    @class = Wrap
     @block = block
   end
 
@@ -131,6 +136,33 @@ class Serializer
 
     def list v=(v_empty=true), &block
       List.walk(v_empty ? @_ : v, &block)
+    end
+  end
+
+  class Wrap
+    def self.walk *args, &block
+
+      unless block
+        raise 'Serializer#wrap needs block with rules'
+      end
+
+      wrapper = new
+      wrapper.instance_exec(*args, &block)
+      wrapper.result
+    end
+
+    attr_accessor :result
+
+    def resource v=(v_empty=true), &block
+      @result = Resource.walk(v_empty ? @_ : v, &block)
+    end
+
+    def collection v=(v_empty=true), &block
+      @result = Collection.walk(v_empty ? @_ : v, &block)
+    end
+
+    def list v=(v_empty=true), &block
+      @result = List.walk(v_empty ? @_ : v, &block)
     end
   end
 end
