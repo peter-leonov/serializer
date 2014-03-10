@@ -288,6 +288,20 @@ describe Serializer do
           ]
         end
 
+        it 'should list hashes' do
+          class ListOverHash < Serializer
+            list do |k, v|
+              "#{k} => #{v}"
+            end
+            self
+          end.serialize(
+            {a: 1, b: 2}
+          ).should == [
+            "a => 1",
+            "b => 2"
+          ]
+        end
+
         it 'should list lists' do
           class ListOfLists < Serializer
             list do
