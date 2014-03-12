@@ -10,6 +10,11 @@ class Serializer
     @class = Resource
     @block = block
   end
+  def self.namespace &block
+    raise 'root rule is already defined' if @class
+    @class = Resource
+    @block = block
+  end
   def self.collection &block
     raise 'root rule is already defined' if @class
     @class = Collection
@@ -155,6 +160,10 @@ class Serializer
 
     def resource v=(v_empty=true), &block
       @result = Resource.walk(v_empty ? @_ : v, &block)
+    end
+
+    def namespace &block
+      @result = Resource.walk(@_, &block)
     end
 
     def collection v=(v_empty=true), &block
